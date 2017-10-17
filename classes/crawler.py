@@ -49,8 +49,9 @@ class Crawler(object):
 			soup = BeautifulSoup(html, 'html.parser')
 			title = soup.find('h1', {'class': 'header__title'})
 			if title == None:
-				continue
-			title = re.sub('\?|\.|\!|\/|\;|\:', '', title.string)
+				title = ''
+			else:
+				title = re.sub('\?|\.|\!|\/|\;|\:', '', title.string)
 			file = self.__dir + str(prefix) + ' - ' + title
 			if not os.path.exists(file):
 				handle = open(file, "w")
