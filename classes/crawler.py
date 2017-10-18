@@ -1,7 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
 import os
-import re
 import time
 
 class Crawler(object):
@@ -38,7 +37,7 @@ class Crawler(object):
 				title = link.string
 				self.__urlList.append(href)
 				self.log('Otained url: ' + href)
-			time.sleep(0.5)
+			time.sleep(0.2)
 
 	def downloadContent(self):
 		self.log('Downloading HTML files...')
@@ -47,11 +46,8 @@ class Crawler(object):
 			response = requests.get(url)
 			html = response.text
 			soup = BeautifulSoup(html, 'html.parser')
-			title = soup.find('h1', {'class': 'header__title'})
-			if title == None:
-				title = ''
-			else:
-				title = re.sub('\?|\.|\!|\/|\;|\:', '', title.string)
+			parsed_url = url.split('/')
+			title = parsed_url[4]
 			file = self.__dir + str(prefix) + ' - ' + title
 			if not os.path.exists(file):
 				handle = open(file, "w")
@@ -59,5 +55,4 @@ class Crawler(object):
 				handle.write(html)
 				handle.close()
 			prefix += 1
-			time.sleep(0.5)
-			
+			time.sleep(0.2)
