@@ -3,11 +3,13 @@ import requests
 import os
 import time
 import sys
+import io
 
 class Crawler(object):
 
-	def __init__(self, url, directory, quiet, limit = 1):
-		self.__baseUrl = url + '?p[order]=23&p[page]='
+	def __init__(self, url, directory, quiet, limit = 1, startFrom = 1):
+		self.__baseUrl = url
+		'''
 		# add '/' to end of directory name if it doesn't exists
 		if directory.endswith('/'):
 			self.__dir = directory
@@ -16,9 +18,19 @@ class Crawler(object):
 		# add current working directory to start of the path if '/' doesn't exists
 		if not self.__dir.startswith('/'):
 			self.__dir = os.getcwd() + '/' + self.__dir
+		'''
+		# add '/' to end of directory name if it doesn't exists
+		if directory.endswith('\\'):
+			self.__dir = directory
+		else:
+			self.__dir = directory + '\\'
+		# add current working directory to start of the path if '/' doesn't exists
+		if not self.__dir.startswith('\\'):
+			self.__dir = os.getcwd() + '\\' + self.__dir
 		self.__quiet = quiet
 		self.__limit = limit
 		self.__urlList = []
+		self.__from = startFrom
 
 	def log(self, string):
 		if self.__quiet != 1:
@@ -49,7 +61,7 @@ class Crawler(object):
 	def getUrlList(self):
 		self.log('Obtaining URLs...')
 		i = 1
-		for page in range(1, self.__limit + 1):
+		for page in range(self.__from, self.__from + self.__limit):
 			response = self.httpRequest(self.__baseUrl + str(page))
 			html = response.text
 			soup = BeautifulSoup(html, 'html.parser')
@@ -64,7 +76,8 @@ class Crawler(object):
 
 	def downloadContent(self):
 		self.log('Downloading HTML files...')
-		prefix = 1
+		encoding = 'utf-8'
+		prefix = (self.__from - 1) * 20 + 1
 		for url in self.__urlList:
 			response = self.httpRequest(url)
 			html = response.text
@@ -73,9 +86,9 @@ class Crawler(object):
 			title = parsed_url[4]
 			file = self.__dir + str(prefix) + ' - ' + title
 			if not os.path.exists(file):
-				handle = open(file, "w")
-				self.log('Downloaded file [' + str(prefix) + ']: ' + file)
-				handle.write(html)
-				handle.close()
+				with io.open(file, 'w', encoding = encoding) as handle:
+					self.log('Downloaded file [' + str(prefix) + ']: ' + file)
+					handle.write(html)
+					handle.close()
 			prefix += 1
 			# time.sleep(0.2)
