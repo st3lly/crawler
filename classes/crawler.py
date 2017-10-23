@@ -9,24 +9,7 @@ class Crawler(object):
 
 	def __init__(self, url, directory, quiet, limit = 1, startFrom = 1):
 		self.__baseUrl = url
-		'''
-		# add '/' to end of directory name if it doesn't exists
-		if directory.endswith('/'):
-			self.__dir = directory
-		else:
-			self.__dir = directory + '/'
-		# add current working directory to start of the path if '/' doesn't exists
-		if not self.__dir.startswith('/'):
-			self.__dir = os.getcwd() + '/' + self.__dir
-		'''
-		# add '/' to end of directory name if it doesn't exists
-		if directory.endswith('\\'):
-			self.__dir = directory
-		else:
-			self.__dir = directory + '\\'
-		# add current working directory to start of the path if '/' doesn't exists
-		if not self.__dir.startswith('\\'):
-			self.__dir = os.getcwd() + '\\' + self.__dir
+		self.__dir = directory
 		self.__quiet = quiet
 		self.__limit = limit
 		self.__urlList = []
