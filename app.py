@@ -10,7 +10,8 @@ from elasticsearch import Elasticsearch
 @click.option('--d', type = click.Path(exists = True), default = os.getcwd())
 @click.option('--q', default = 0)
 @click.option('--o', type = click.Choice(['0', '1', '2']), default = '2')
-def main(p, d, q, f, o):
+@click.option('--idf', default = 0)
+def main(p, d, q, f, o, idf):
 	doCrawler = True
 	doParser = True
 	if o == '0':
@@ -51,7 +52,7 @@ def main(p, d, q, f, o):
 			print('---------------------------------')
 		files = [dir_ + f for f in os.listdir(dir_)]
 		es = Elasticsearch()
-		p = Parser(es, q)
+		p = Parser(es, q, idf)
 		p.parseData(files)
 
 if __name__ == '__main__':
